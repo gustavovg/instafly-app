@@ -97,8 +97,7 @@ export const db = {
   white_label_sites: supabase.from('white_label_sites'),
   service_ratings: supabase.from('service_ratings'),
   drip_feed_orders: supabase.from('drip_feed_orders'),
-  chatbot_flows: supabase.from('chatbot_flows'),
-  chatbot_settings: supabase.from('chatbot_settings'),
+
   whatsapp_templates: supabase.from('whatsapp_templates'),
   push_subscriptions: supabase.from('push_subscriptions')
 }

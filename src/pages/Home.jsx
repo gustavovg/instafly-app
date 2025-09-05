@@ -48,6 +48,7 @@ import { getInstagramProfile } from "@/api/functions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DripFeedOrder } from '@/api/entities';
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/api/supabaseClient";
 
 
 const SocialProofNotifications = lazy(() => import("../components/SocialProofNotifications"));
@@ -926,10 +927,10 @@ Equipe ${settings?.brand_name || 'InstaFLY'}
   };
 
   const filteredServices = selectedCategory === "all" 
-    ? services 
-    : services.filter(service => (service.platform) === selectedCategory);
+    ? (services || []) 
+    : (services || []).filter(service => (service.platform) === selectedCategory);
 
-  const categories = [...new Set(services.map(s => s.platform).filter(Boolean))];
+  const categories = [...new Set((services || []).map(s => s.platform).filter(Boolean))];
 
   // Função para atualizar quantidade de um serviço específico
   const updateServiceQuantity = (serviceId, quantity) => {
@@ -1189,7 +1190,7 @@ Equipe ${settings?.brand_name || 'InstaFLY'}
                   <Filter className="w-4 h-4" />
                   Todos
                 </TabsTrigger>
-                {categories.slice(0, 5).map(category => {
+                {(categories || []).slice(0, 5).map(category => {
                   const PlatformIcon = platformIcons[category] || Zap;
                   const colors = platformColors[category] || platformColors.default;
                   return (
@@ -1359,7 +1360,7 @@ Equipe ${settings?.brand_name || 'InstaFLY'}
                 Seus Favoritos
               </h3>
               <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {services.filter(s => favoriteServices.includes(s.id || s.service)).map(service => (
+                {(services || []).filter(s => favoriteServices.includes(s.id || s.service)).map(service => (
                   <div key={service.id || service.service} className="bg-white p-4 rounded-lg shadow-md border-2 border-red-200">
                     <h4 className="font-bold text-sm">{service.name}</h4>
                     <p className="text-xs text-gray-600">{service.platform}</p>
@@ -1789,11 +1790,11 @@ Equipe ${settings?.brand_name || 'InstaFLY'}
               </div>
               <div className="flex justify-between">
                 <span>Quantidade:</span>
-                <span className="font-medium">{currentOrder.quantity.toLocaleString()}</span>
+                <span className="font-medium">{currentOrder.quantity?.toLocaleString() || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span>Valor Total:</span>
-                <span className="font-bold text-lg text-green-600">R$ {currentOrder.total_price.toFixed(2).replace('.', ',')}</span>
+                <span className="font-bold text-lg text-green-600">R$ {currentOrder.total_price?.toFixed(2).replace('.', ',') || '0,00'}</span>
               </div>
             </div>
 

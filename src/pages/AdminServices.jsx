@@ -119,7 +119,7 @@ export default function AdminServices() {
         setAlert({ type: "success", message: "Serviço atualizado com sucesso!" });
       } else {
         // When creating a new service, assign a new order_index
-        const newOrderIndex = services.length > 0 ? Math.max(...services.map(s => s.order_index || 0)) + 1 : 0;
+        const newOrderIndex = (services || []).length > 0 ? Math.max(...(services || []).map(s => s.order_index || 0)) + 1 : 0;
         await Service.create({ ...formData, order_index: newOrderIndex });
         setAlert({ type: "success", message: "Serviço criado com sucesso!" });
       }
@@ -207,7 +207,7 @@ export default function AdminServices() {
     setAlert(null);
     try {
       // Update each service with its new order_index and normalized data
-      const updatePromises = services.map((service, index) => {
+      const updatePromises = (services || []).map((service, index) => {
         const normalizedData = normalizeServiceData(service);
         return Service.update(service.id, { ...normalizedData, order_index: index });
       });
@@ -310,52 +310,56 @@ export default function AdminServices() {
                   <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
-              <Droppable droppableId="services">
-                {(provided) => (
-                  <TableBody {...provided.droppableProps} ref={provided.innerRef}>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan="7">Carregando serviços...</TableCell>
-                      </TableRow>
-                    ) : (
-                      services.map((service, index) => (
-                        <Draggable key={service.id} draggableId={service.id} index={index}>
-                          {(provided) => (
-                            <TableRow
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                            >
-                              <TableCell {...provided.dragHandleProps}>
-                                <GripVertical className="text-gray-400 cursor-grab" />
-                              </TableCell>
-                              <TableCell className="font-medium">{service.name}</TableCell>
-                              <TableCell>{service.platform}</TableCell>
-                              <TableCell>R$ {(service.price_per_thousand || service.price_per_1000 || 0).toFixed(2)}</TableCell>
-                              <TableCell>R$ {(service.cost_per_thousand || 0).toFixed(2)}</TableCell>
-                              <TableCell>
-                                <Badge variant={service.is_active !== false ? "success" : "destructive"}>
-                                  {service.is_active !== false ? "Ativo" : "Inativo"}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex gap-2">
-                                  <Button variant="outline" size="sm" onClick={() => handleEdit(service)}>
-                                    <Edit className="w-4 h-4" />
-                                  </Button>
-                                  <Button variant="destructive" size="sm" onClick={() => handleDelete(service.id)}>
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </Draggable>
-                      ))
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan="7">Carregando serviços...</TableCell>
+                  </TableRow>
+                ) : (
+                  <Droppable droppableId="services">
+                    {(provided) => (
+                      <>
+                        {(services || []).map((service, index) => (
+                          <Draggable key={service.id} draggableId={service.id} index={index}>
+                            {(provided) => (
+                              <TableRow
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                              >
+                                <TableCell {...provided.dragHandleProps}>
+                                  <GripVertical className="text-gray-400 cursor-grab" />
+                                </TableCell>
+                                <TableCell className="font-medium">{service.name}</TableCell>
+                                <TableCell>{service.platform}</TableCell>
+                                <TableCell>R$ {(service.price_per_thousand || service.price_per_1000 || 0).toFixed(2)}</TableCell>
+                                <TableCell>R$ {(service.cost_per_thousand || 0).toFixed(2)}</TableCell>
+                                <TableCell>
+                                  <Badge variant={service.is_active !== false ? "success" : "destructive"}>
+                                    {service.is_active !== false ? "Ativo" : "Inativo"}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => handleEdit(service)}>
+                                      <Edit className="w-4 h-4" />
+                                    </Button>
+                                    <Button variant="destructive" size="sm" onClick={() => handleDelete(service.id)}>
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </Draggable>
+                        ))}
+                        <tr style={{ display: 'none' }} ref={provided.innerRef} {...provided.droppableProps}>
+                          {provided.placeholder}
+                        </tr>
+                      </>
                     )}
-                    {provided.placeholder}
-                  </TableBody>
+                  </Droppable>
                 )}
-              </Droppable>
+              </TableBody>
             </Table>
           </DragDropContext>
         </CardContent>

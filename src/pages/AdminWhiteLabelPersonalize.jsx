@@ -259,7 +259,7 @@ export default function AdminWhiteLabelPersonalize() {
                     <div className="bg-yellow-100 p-2 rounded font-mono text-xs my-2">
                       <strong>Tipo:</strong> CNAME<br/>
                       <strong>Nome/Host:</strong> www<br/>
-                      <strong>Destino/Valor:</strong> {process.env.REACT_APP_MAIN_DOMAIN || 'seu-dominio-principal.com'}
+                      <strong>Destino/Valor:</strong> {import.meta.env.VITE_MAIN_DOMAIN || 'seu-dominio-principal.com'}
                     </div>
                     <p className="font-semibold">Importante: O domínio do seu cliente deve ser configurado para usar `www`, por exemplo, `www.paineldojoao.com`.</p>
                     <p>3. Aguarde a propagação do DNS, que pode levar de alguns minutos a algumas horas.</p>

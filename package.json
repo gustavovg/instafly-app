@@ -13,6 +13,7 @@
     "check:env": "node -e \"console.log('Checking .env...'); require('dotenv').config(); console.log('SUPABASE_URL:', process.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Missing');\"",
     "deploy:functions": "node deploy-edge-functions.cjs",
     "deploy:functions:npx": "node deploy-functions-npx.cjs",
+    "setup:github": "node setup-github.cjs",
     "supabase:login": "npx supabase@latest login",
     "supabase:link": "npx supabase@latest link",
     "supabase:deploy": "npx supabase@latest functions deploy",

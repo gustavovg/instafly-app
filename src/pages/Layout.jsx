@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Toaster } from 'sonner';
 import PWAManifest from '../components/PWAManifest';
 import WhatsAppSupport from '../components/WhatsAppSupport';
-import SalesChatbot from '../components/SalesChatbot';
+
 import { useAuth } from '@/contexts/AuthContext';
 
 import {
@@ -29,8 +29,12 @@ export default function Layout({ children, currentPageName }) {
   const [showPwaModal, setShowPwaModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
-  // Hook de autenticação (só usado em páginas admin)
-  const auth = currentPageName?.startsWith('Admin') ? useAuth() : null;
+  // Hook de autenticação sempre chamado (regra dos hooks)
+  const auth = useAuth();
+  
+  // Determinar se deve usar autenticação baseado na página
+  const shouldUseAuth = currentPageName?.startsWith('Admin');
+  const effectiveAuth = shouldUseAuth ? auth : null;
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -39,7 +43,7 @@ export default function Layout({ children, currentPageName }) {
         const testDomain = urlParams.get('test_domain');
         const hostname = testDomain || window.location.hostname;
 
-        const mainDomain = process.env.REACT_APP_MAIN_DOMAIN || "localhost";
+        const mainDomain = import.meta.env.VITE_MAIN_DOMAIN || "localhost";
 
         if (hostname !== mainDomain && hostname !== "localhost") {
           const sites = await WhiteLabelSite.list();
@@ -179,10 +183,7 @@ export default function Layout({ children, currentPageName }) {
                   {sidebarOpen && <div className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Comunicação</div>}
                 </div>
 
-                <Link to={createPageUrl("AdminChatbot")} className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPageName === 'AdminChatbot' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'}`}>
-                  <MessageSquare className="w-5 h-5 mr-3" />
-                  {sidebarOpen && 'Chatbot'}
-                </Link>
+
                 <Link to={createPageUrl("AdminWhatsAppTemplates")} className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPageName === 'AdminWhatsAppTemplates' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'}`}>
                   <MessagesSquare className="w-5 h-5 mr-3" />
                   {sidebarOpen && 'Templates WhatsApp'}
@@ -266,7 +267,7 @@ export default function Layout({ children, currentPageName }) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => auth?.logout()}
+                      onClick={() => effectiveAuth?.logout()}
                       className="text-gray-600 hover:text-red-600 hover:bg-red-50"
                       title="Sair do sistema"
                     >
@@ -439,7 +440,7 @@ export default function Layout({ children, currentPageName }) {
           )}
 
           {isPublicRoute && <WhatsAppSupport settings={effectiveSettings} />}
-          {isPublicRoute && <SalesChatbot settings={effectiveSettings} currentPageName={currentPageName} />}
+
 
           <Dialog open={showPwaModal} onOpenChange={setShowPwaModal}>
             <DialogContent className="sm:max-w-md">

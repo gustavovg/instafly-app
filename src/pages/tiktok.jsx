@@ -129,7 +129,7 @@ export default function TikTokPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {services.map(service => (
+            {(services || []).map(service => (
               <div key={service.id} className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-700 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 transform hover:scale-105">
                 
                 {service.badge_type === 'guaranteed' && (

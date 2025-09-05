@@ -1,4 +1,5 @@
 import { supabase, db } from './supabaseClient';
+import { logApiError } from '../utils/logger';
 
 
 // Função para buscar perfil do Instagram usando API externa
@@ -16,7 +17,7 @@ export const getInstagramProfile = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('getInstagramProfile error, using fallback:', error);
+    logApiError('getInstagramProfile', error, 'Using fallback profile data');
     return {
       data: {
         username: params.username || 'error_user',
@@ -31,6 +32,204 @@ export const getInstagramProfile = async (params) => {
       },
       status: 500,
       error: error
+    };
+  }
+};
+
+// Função para criar assinatura
+export const createSubscription = async (params) => {
+  try {
+    // Inserir nova assinatura no banco
+    const { data: subscription, error } = await db.customer_subscriptions
+      .insert({
+        user_id: params.userId,
+        plan_id: params.planId,
+        status: 'pending',
+        start_date: new Date().toISOString(),
+        payment_method: params.paymentMethod || 'mercado_pago'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      data: {
+        success: true,
+        subscription: subscription,
+        subscription_id: subscription.id
+      },
+      status: 200
+    };
+  } catch (error) {
+    logApiError('createSubscription', error);
+    return {
+      data: {
+        success: false,
+        error: 'Subscription creation failed'
+      },
+      status: 500
+    };
+  }
+};
+
+// Função para deletar pedido
+export const deleteOrder = async (params) => {
+  try {
+    const { error } = await db.orders
+      .delete()
+      .eq('id', params.orderId);
+
+    if (error) throw error;
+
+    return {
+      data: {
+        success: true,
+        deleted: true
+      },
+      status: 200
+    };
+  } catch (error) {
+    logApiError('deleteOrder', error);
+    return {
+      data: {
+        success: false,
+        error: 'Order deletion failed'
+      },
+      status: 500
+    };
+  }
+};
+
+// Função para exportar pedidos
+export const exportOrders = async (params) => {
+  try {
+    const { data: orders, error } = await db.orders
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return {
+      data: {
+        orders: orders,
+        count: orders.length,
+        exported_at: new Date().toISOString()
+      },
+      status: 200
+    };
+  } catch (error) {
+    logApiError('exportOrders', error);
+    return {
+      data: {
+        orders: [],
+        error: 'Orders export failed'
+      },
+      status: 500
+    };
+  }
+};
+
+// Função para notificações inteligentes
+export const intelligentNotifications = async (params) => {
+  try {
+    // Chamar Edge Function para notificações inteligentes
+    const { data, error } = await supabase.functions.invoke('intelligent-notifications', {
+      body: {
+        userId: params.userId,
+        type: params.type || 'order_update',
+        context: params.context
+      }
+    });
+
+    if (error) throw error;
+
+    return {
+      data: {
+        success: true,
+        notifications_sent: data.notifications_sent || 0,
+        processed_at: new Date().toISOString()
+      },
+      status: 200
+    };
+  } catch (error) {
+    logApiError('intelligentNotifications', error);
+    return {
+      data: {
+        success: false,
+        error: 'Intelligent notifications failed'
+      },
+      status: 500
+    };
+  }
+};
+
+// Função para simular fluxo completo
+export const simulateFullFlow = async (params) => {
+  try {
+    // Chamar Edge Function para simular fluxo completo
+    const { data, error } = await supabase.functions.invoke('simulate-full-flow', {
+      body: {
+        serviceId: params.serviceId,
+        quantity: params.quantity || 1000,
+        username: params.username || 'test_user',
+        simulate_payment: params.simulate_payment || true
+      }
+    });
+
+    if (error) throw error;
+
+    return {
+      data: {
+        success: true,
+        simulation_completed: true,
+        order_id: data.order_id,
+        payment_status: data.payment_status,
+        processing_status: data.processing_status
+      },
+      status: 200
+    };
+  } catch (error) {
+    logApiError('simulateFullFlow', error);
+    return {
+      data: {
+        success: false,
+        error: 'Full flow simulation failed'
+      },
+      status: 500
+    };
+  }
+};
+
+// Função para verificar status do pedido
+export const checkOrderStatus = async (params) => {
+  try {
+    const { data: order, error } = await db.orders
+      .select('*')
+      .eq('id', params.orderId)
+      .single();
+
+    if (error) throw error;
+
+    return {
+      data: {
+        status: order.status,
+        progress: order.progress || 0,
+        completed_quantity: order.completed_quantity || 0,
+        total_quantity: order.quantity,
+        created_at: order.created_at,
+        updated_at: order.updated_at
+      },
+      status: 200
+    };
+  } catch (error) {
+    logApiError('checkOrderStatus', error);
+    return {
+      data: {
+        status: 'unknown',
+        error: 'Order status check failed'
+      },
+      status: 500
     };
   }
 };
@@ -59,7 +258,7 @@ export const getServiceCost = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('getServiceCost error, using fallback:', error);
+    logApiError('getServiceCost', error, 'Using fallback cost data');
     return {
       data: {
         cost: 10.00,
@@ -122,7 +321,7 @@ export const processOrder = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('processOrder error:', error);
+    logApiError('processOrder', error);
     return {
       data: {
         success: false,
@@ -161,7 +360,7 @@ export const createPayment = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('createPayment error:', error);
+    logApiError('createPayment', error);
     return {
       data: {
         success: false,
@@ -197,7 +396,7 @@ export const webhookMercadoPago = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('webhookMercadoPago error:', error);
+    logApiError('webhookMercadoPago', error);
     return {
       data: {
         success: false,
@@ -235,7 +434,7 @@ export const syncOrderStatus = async (params) => {
           syncedCount++;
         }
       } catch (syncError) {
-        console.warn(`Failed to sync order ${order.id}:`, syncError);
+        logApiError('syncOrder', syncError, `Failed to sync order ${order.id}`);
       }
     }
 
@@ -248,7 +447,7 @@ export const syncOrderStatus = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('syncOrderStatus error:', error);
+    logApiError('syncOrderStatus', error);
     return {
       data: {
         success: false,
@@ -276,7 +475,7 @@ export const autoSyncOrders = async (params) => {
         await syncOrderStatus({ orderId: order.id });
         syncedCount++;
       } catch (syncError) {
-        console.warn(`Erro ao sincronizar pedido ${order.id}:`, syncError);
+        logApiError('autoSyncOrders', syncError, `Erro ao sincronizar pedido ${order.id}`);
       }
     }
 
@@ -289,7 +488,7 @@ export const autoSyncOrders = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('autoSyncOrders error:', error);
+    logApiError('autoSyncOrders', error);
     return {
       data: {
         success: false,
@@ -324,7 +523,7 @@ export const sendWhatsApp = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('sendWhatsApp error:', error);
+    logApiError('sendWhatsApp', error);
     return {
       data: {
         success: false,
@@ -393,7 +592,7 @@ export const validateCoupon = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('validateCoupon error:', error);
+    logApiError('validateCoupon', error);
     return {
       data: {
         valid: false,
@@ -423,7 +622,7 @@ export const getVapidKey = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('getVapidKey error:', error);
+    logApiError('getVapidKey', error);
     return {
       data: {
         error: 'VAPID key service temporarily unavailable'
@@ -458,7 +657,7 @@ export const savePushSubscription = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('savePushSubscription error:', error);
+    logApiError('savePushSubscription', error);
     return {
       data: {
         success: false,
@@ -495,7 +694,7 @@ export const sendPushNotification = async (params) => {
       status: 200
     };
   } catch (error) {
-    console.warn('sendPushNotification error:', error);
+    logApiError('sendPushNotification', error);
     return {
       data: {
         success: false,

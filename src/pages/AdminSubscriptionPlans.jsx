@@ -246,7 +246,7 @@ export default function AdminSubscriptionPlans() {
                       <Select value={service.service_id} onValueChange={value => handleServiceChange(index, value)}>
                         <SelectTrigger><SelectValue placeholder="Selecione um serviço" /></SelectTrigger>
                         <SelectContent>
-                          {allServices.map(s => <SelectItem key={s.id} value={s.id}>{s.name} ({s.platform})</SelectItem>)}
+                          {(allServices || []).map(s => <SelectItem key={s.id} value={s.id}>{s.name} ({s.platform})</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>

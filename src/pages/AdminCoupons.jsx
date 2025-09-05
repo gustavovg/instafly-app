@@ -395,7 +395,7 @@ export default function AdminCoupons() {
                     </Label>
                   </div>
                 </div>
-                {services.map((service) => (
+                {(services || []).map((service) => (
                   <div key={service.id} className="flex items-center space-x-2">
                     <Checkbox
                       id={`service-${service.id}`}

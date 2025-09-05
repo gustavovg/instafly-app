@@ -119,15 +119,21 @@ serve(async (req) => {
       },
     }
 
-    // Log the request for analytics
-    await supabaseClient
-      .from('api_logs')
-      .insert({
-        function_name: 'get-instagram-profile',
-        request_data: { username },
-        response_data: profileData,
-        created_at: new Date().toISOString(),
-      })
+    // Log the request for analytics (optional - won't fail if table doesn't exist)
+    try {
+      await supabaseClient
+        .from('api_logs')
+        .insert({
+          function_name: 'get-instagram-profile',
+          request_data: { username },
+          response_data: profileData,
+          status_code: 200,
+          created_at: new Date().toISOString(),
+        })
+    } catch (logError) {
+      // Log error is not critical, continue execution
+      console.warn('Failed to log API request:', logError)
+    }
 
     return new Response(JSON.stringify(profileData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

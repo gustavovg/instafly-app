@@ -240,25 +240,7 @@ CREATE TABLE public.drip_feed_orders (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Chatbot Flows table
-CREATE TABLE public.chatbot_flows (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name TEXT NOT NULL,
-  trigger_keywords JSONB DEFAULT '[]',
-  flow_data JSONB NOT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
 
--- Chatbot Settings table
-CREATE TABLE public.chatbot_settings (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  key TEXT UNIQUE NOT NULL,
-  value JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
 
 -- WhatsApp Templates table
 CREATE TABLE public.whatsapp_templates (

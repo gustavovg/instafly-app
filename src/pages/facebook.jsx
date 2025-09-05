@@ -134,7 +134,7 @@ export default function FacebookPage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Escolha seu Pacote Facebook</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {services.map(service => {
+            {(services || []).map(service => {
               const isPopular = service.is_popular || service.badge_type === 'popular';
               return (
                 <div key={service.id} className={`relative bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 transform hover:scale-105 ${isPopular ? 'border-blue-200 ring-2 ring-blue-300' : 'border-gray-100'}`}>

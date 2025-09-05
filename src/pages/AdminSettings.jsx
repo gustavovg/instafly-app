@@ -501,7 +501,7 @@ export default function AdminSettings() {
                     Para a sincronização automática funcionar, você precisa configurar um Cron Job que chame esta URL:
                   </p>
                   <div className="bg-blue-100 p-2 rounded font-mono text-sm break-all">
-                    {process.env.REACT_APP_SUPABASE_URL}/functions/v1/auto-sync-orders
+                    {import.meta.env.VITE_SUPABASE_URL}/functions/v1/auto-sync-orders
                   </div>
                   <p className="text-sm text-blue-800 mt-2">
                     <strong>Método:</strong> POST<br />
@@ -559,7 +559,7 @@ export default function AdminSettings() {
                 </div>
                 <p className="text-sm text-gray-600">
                   O botão flutuante permite que os visitantes entrem em contato diretamente via WhatsApp. 
-                  Desabilite se você usa apenas o chatbot ou não quer que apareçam dois botões.
+                  Desabilite se você não quer que apareçam dois botões de suporte.
                 </p>
               </CardContent>
             </Card>

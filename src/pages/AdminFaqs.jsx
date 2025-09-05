@@ -115,35 +115,39 @@ export default function AdminFaqs() {
                   <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
-              <Droppable droppableId="faqs">
-                {(provided) => (
-                  <TableBody ref={provided.innerRef} {...provided.droppableProps}>
-                    {faqs.map((faq, index) => (
-                      <Draggable key={faq.id} draggableId={faq.id} index={index}>
-                        {(provided) => (
-                          <TableRow ref={provided.innerRef} {...provided.draggableProps}>
-                             <TableCell {...provided.dragHandleProps} className="cursor-grab">
-                               <GripVertical className="text-gray-400" />
-                             </TableCell>
-                            <TableCell className="font-medium">{faq.question}</TableCell>
-                            <TableCell><Badge variant="outline">{faq.category}</Badge></TableCell>
-                            <TableCell>
-                               <Switch checked={faq.is_active} onCheckedChange={(checked) => Faq.update(faq.id, {is_active: checked}).then(fetchFaqs)} />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={() => openModal(faq)}><Edit className="w-4 h-4"/></Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDelete(faq.id)}><Trash2 className="w-4 h-4"/></Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </TableBody>
-                )}
-              </Droppable>
+              <TableBody>
+                <Droppable droppableId="faqs">
+                  {(provided) => (
+                    <>
+                      {faqs.map((faq, index) => (
+                        <Draggable key={faq.id} draggableId={faq.id} index={index}>
+                          {(provided) => (
+                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                               <TableCell {...provided.dragHandleProps} className="cursor-grab">
+                                 <GripVertical className="text-gray-400" />
+                               </TableCell>
+                              <TableCell className="font-medium">{faq.question}</TableCell>
+                              <TableCell><Badge variant="outline">{faq.category}</Badge></TableCell>
+                              <TableCell>
+                                 <Switch checked={faq.is_active} onCheckedChange={(checked) => Faq.update(faq.id, {is_active: checked}).then(fetchFaqs)} />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" size="sm" onClick={() => openModal(faq)}><Edit className="w-4 h-4"/></Button>
+                                  <Button variant="destructive" size="sm" onClick={() => handleDelete(faq.id)}><Trash2 className="w-4 h-4"/></Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </Draggable>
+                      ))}
+                      <tr style={{ display: 'none' }} ref={provided.innerRef} {...provided.droppableProps}>
+                        {provided.placeholder}
+                      </tr>
+                    </>
+                  )}
+                </Droppable>
+              </TableBody>
             </Table>
           </DragDropContext>
           )}

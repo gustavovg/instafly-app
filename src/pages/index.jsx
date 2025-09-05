@@ -74,19 +74,13 @@ import Instagram from "./Instagram";
 
 import YouTube from "./YouTube";
 
-import TikTok from "./TikTok";
-
-import instagram from "./instagram";
-
-import youtube from "./youtube";
-
 import tiktok from "./tiktok";
 
 import facebook from "./facebook";
 
 import kwai from "./kwai";
 
-import AdminChatbot from "./AdminChatbot";
+
 
 import AdminPwaSettings from "./AdminPwaSettings";
 
@@ -172,11 +166,11 @@ const PAGES = {
     
     YouTube: YouTube,
     
-    TikTok: TikTok,
+
     
-    instagram: instagram,
+
     
-    youtube: youtube,
+    youtube: YouTube,
     
     tiktok: tiktok,
     
@@ -184,7 +178,7 @@ const PAGES = {
     
     kwai: kwai,
     
-    AdminChatbot: AdminChatbot,
+
     
     AdminPwaSettings: AdminPwaSettings,
     
@@ -293,11 +287,11 @@ function PagesContent() {
                 
                 <Route path="/YouTube" element={<YouTube />} />
                 
-                <Route path="/TikTok" element={<TikTok />} />
+
                 
-                <Route path="/instagram" element={<instagram />} />
+
                 
-                <Route path="/youtube" element={<youtube />} />
+                <Route path="/youtube" element={<YouTube />} />
                 
                 <Route path="/tiktok" element={<tiktok />} />
                 
@@ -305,7 +299,7 @@ function PagesContent() {
                 
                 <Route path="/kwai" element={<kwai />} />
                 
-                <Route path="/AdminChatbot" element={<ProtectedRoute><AdminChatbot /></ProtectedRoute>} />
+
                 
                 <Route path="/AdminPwaSettings" element={<ProtectedRoute><AdminPwaSettings /></ProtectedRoute>} />
                 
